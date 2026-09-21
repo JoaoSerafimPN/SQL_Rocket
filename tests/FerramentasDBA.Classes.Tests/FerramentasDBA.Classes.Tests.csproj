@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Testes de unidade da camada de LÓGICA (FerramentasDBA.Classes).
+
+    Alvo net8.0 (e NÃO net8.0-windows) de propósito: nada aqui depende de
+    WinForms, então os testes rodam em qualquer sistema — inclusive num
+    runner Linux, se um dia a compilação da UI for separada da dos testes.
+    Se algum teste futuro precisar de API exclusiva do Windows, ele deve ser
+    isolado com uma condição (ex.: OperatingSystem.IsWindows()) em vez de
+    mudar o TargetFramework deste projeto.
+
+    Só entra aqui o que é PURO e OFFLINE: nada que precise de conexão com o
+    SQL Server (ver tests/README.md).
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>FerramentasDBA.Classes.Tests</RootNamespace>
+    <AssemblyName>FerramentasDBA.Classes.Tests</AssemblyName>
+    <!-- Projeto de teste nunca vira pacote NuGet. -->
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--
+      Versões fixadas de propósito (sem curinga): uma versão que não existe
+      no nuget.org quebra o "dotnet restore" do workflow inteiro, e o erro
+      aparece longe da causa. Estas três formam o conjunto padrão do xUnit
+      para .NET 8.
+    -->
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\FerramentasDBA.Classes\FerramentasDBA.Classes.csproj" />
+  </ItemGroup>
+
+</Project>

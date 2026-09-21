@@ -1,0 +1,94 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Camada de LÓGICA / CORE da aplicação SQL Rocket.
+    Regra de isolamento: NENHUM tipo aqui pode referenciar System.Windows.Forms
+    ou qualquer biblioteca de UI. Esta biblioteca deve poder ser testada e
+    reutilizada (ex: em uma futura API ou console) sem depender do WinForms.
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>FerramentasDBA.Classes</RootNamespace>
+    <AssemblyName>FerramentasDBA.Classes</AssemblyName>
+    <LangVersion>latest</LangVersion>
+    <!-- Mesma versão 1.0 do projeto FerramentasDBA.UI (ver comentário lá). -->
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Driver oficial e atual de acesso ao SQL Server / Azure SQL -->
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
+
+    <!--
+      WMI (Windows Management Instrumentation) — usado em Modulo_Informacoes
+      para obter Domínio e Versão do Windows do host onde o SQL Server roda,
+      sem precisar habilitar xp_cmdshell (desabilitado por padrão por
+      segurança). É a mesma técnica usada pelo SSMS/Visual Studio nas
+      propriedades do servidor: consulta o WMI do host via rede, usando a
+      identidade do Windows de quem está rodando o programa — só funciona
+      quando esse host está acessível na rede (não se aplica a SQL Azure).
+      A API é Windows-only (ver [SupportedOSPlatform] em Modulo_Informacoes),
+      mas o app inteiro só roda em Windows (WinForms) mesmo.
+    -->
+    <PackageReference Include="System.Management" Version="8.0.0" />
+
+    <!--
+      Criptografia DPAPI do Windows (ProtectedData), usada em
+      Infraestrutura/ConexoesSalvas para guardar a senha das conexões salvas
+      cifrada no perfil do usuário. Não faz parte da BCL do .NET moderno: em
+      .NET Framework era nativo, no .NET 8 veio para este pacote. É
+      Windows-only (as classes estão marcadas com [SupportedOSPlatform]), o
+      que não restringe nada aqui — o aplicativo é WinForms.
+    -->
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
+
+    <!--
+      Leitura de arquivos .xel (Extended Events) exportados do SQL Server —
+      usado em Modulo_Deadlock para analisar deadlock graphs sem precisar de
+      uma instância do SQL Server instalada na máquina (ao contrário da API
+      antiga Microsoft.SqlServer.XEvent.Linq, que depende dos assemblies do
+      próprio SQL Server). Suporta net8.0.
+    -->
+    <PackageReference Include="Microsoft.SqlServer.XEvent.XELite" Version="2024.2.5.1" />
+
+    <!--
+      NÃO leia isto como "esquecemos o .trc" — foi removido de propósito.
+      Uma rodada anterior tentou ler o .trc (formato binário legado do SQL
+      Trace/Profiler clássico) via Microsoft.SqlServer.Management.Trace.TraceFile,
+      do pacote Microsoft.SqlServer.SqlManagementObjects, com base numa
+      pesquisa que dizia que isso funcionava em net8.0. Essa pesquisa estava
+      ERRADA: uma investigação mais a fundo (incluindo o próprio código-fonte
+      do pacote em github.com/microsoft/sqlmanagementobjects) confirmou que o
+      namespace Microsoft.SqlServer.Management.Trace simplesmente não existe
+      em NENHUMA versão do pacote moderno, para nenhum target framework — as
+      classes TraceFile/TraceServer só existiam no antigo
+      Microsoft.SqlServer.ConnectionInfoExtended.dll, distribuído só via MSI
+      do "SQL Server Feature Pack" (Windows/.NET Framework, nunca existiu
+      como pacote NuGet), e nunca foi portado pra cá. Ou seja: não existe
+      hoje nenhuma biblioteca oficial da Microsoft para ler um .trc de forma
+      100% offline num projeto .NET 8 — só via conexão viva a um SQL Server,
+      usando a função (descontinuada) fn_trace_gettable, que além de exigir
+      conexão precisa que o ARQUIVO esteja num caminho que o SERVIÇO do SQL
+      Server consiga ler (não o cliente). Por isso o Profiler desta
+      ferramenta só lê .xel/.csv — ver Modulo_Profiler para os detalhes.
+    -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
+      Qualquer .sql colocado em Scripts/** é embutido automaticamente como
+      recurso do assembly (não precisa editar este .csproj a cada script
+      novo). Consumido em tempo de execução via
+      Infraestrutura/ScriptLoader.CarregarScriptAsync("Admin/BackupFull.sql").
+      Ver Scripts/README.md para a convenção completa.
+    -->
+    <EmbeddedResource Include="Scripts\**\*.sql" />
+
+    <!-- Os README.md dentro de Scripts/ são só documentação: não fazem parte do build. -->
+    <None Remove="Scripts\**\*.md" />
+  </ItemGroup>
+
+</Project>

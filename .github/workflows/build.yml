@@ -1,0 +1,55 @@
+# ---------------------------------------------------------------------------
+# Compilação e testes automáticos da SQL Rocket (integração contínua).
+#
+# POR QUÊ ESTE ARQUIVO EXISTE: até agora a única máquina que compilava o
+# projeto era a do desenvolvedor (Visual Studio). Correções escritas fora dele
+# só descobriam erros de compilação quando alguém abria a solução — foi assim
+# que um CS0104 (tipo ambíguo) chegou até o Visual Studio sem ninguém perceber
+# antes. Com este workflow, o compilador roda a CADA push e a CADA pull
+# request, no GitHub.
+#
+# COMO LER O RESULTADO: um "check" VERMELHO neste workflow significa que o
+# código NÃO COMPILA (ou que um teste quebrou) — não é um aviso opcional, é o
+# mesmo erro que apareceria ao abrir a solução no Visual Studio. O log de cada
+# passo mostra o arquivo, a linha e o código do erro (ex.: CS0104).
+# ---------------------------------------------------------------------------
+
+name: Build e Testes
+
+on:
+  push:
+  pull_request:
+  # Permite disparar manualmente pela aba "Actions" do GitHub, sem precisar de
+  # um commit novo (útil para reconferir depois de mexer no próprio workflow).
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Compilar e testar (Windows)
+    # OBRIGATÓRIO ser Windows: FerramentasDBA.UI tem TargetFramework
+    # net8.0-windows com UseWindowsForms, que simplesmente não compila em
+    # Linux/macOS. Trocar por ubuntu-latest faria a solução inteira falhar.
+    runs-on: windows-latest
+
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      - name: Instalar o .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restaurar pacotes NuGet
+        run: dotnet restore FerramentasDBA.sln
+
+      # NÃO usar "-warnaserror" aqui: o projeto já tem avisos antigos
+      # (nullability, APIs só de Windows, etc.) que não são erros reais. Com
+      # warnings-as-errors o check ficaria permanentemente vermelho e as
+      # pessoas parariam de olhar para ele — exatamente o contrário do que se
+      # quer. Aqui vermelho tem que significar "não compila".
+      - name: Compilar (Release)
+        run: dotnet build FerramentasDBA.sln --configuration Release --no-restore
+
+      - name: Rodar os testes de unidade
+        run: dotnet test FerramentasDBA.sln --configuration Release --no-build --verbosity normal

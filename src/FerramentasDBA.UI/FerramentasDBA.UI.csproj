@@ -1,0 +1,60 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Camada de APRESENTAÇÃO (Windows Forms).
+    Contém apenas Forms, controles e "colagem" de eventos -> chamadas para a
+    camada de negócio em FerramentasDBA.Classes. Nenhuma regra de negócio ou
+    query T-SQL deve viver aqui.
+  -->
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>FerramentasDBA.UI</RootNamespace>
+    <AssemblyName>FerramentasDBA.UI</AssemblyName>
+    <LangVersion>latest</LangVersion>
+    <!--
+      Ícone do .exe (Explorer/atalhos/barra de tarefas quando a janela não
+      define o próprio Form.Icon). O mesmo arquivo também é embutido como
+      recurso abaixo (EmbeddedResource) para ser carregado em tempo de
+      execução e aplicado a cada Form via RecursosVisuais.CarregarIconeApp()
+      — ApplicationIcon sozinho NÃO define o Form.Icon automaticamente em
+      projetos no formato SDK, só o ícone do arquivo .exe em si.
+    -->
+    <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
+    <!-- Metadados do .exe (aba "Detalhes" nas Propriedades do arquivo no Windows, Gerenciador de Tarefas, etc.). -->
+    <Product>SQL Rocket</Product>
+    <AssemblyTitle>SQL Rocket</AssemblyTitle>
+    <!--
+      Versão 1.0 (produção) — pedido do usuário. Define de uma vez
+      AssemblyVersion/FileVersion/InformationalVersion (aba "Detalhes" do
+      arquivo no Windows) e é a mesma versão exibida na página "Sobre" do
+      app (badge "v1.0", Menu_Raiz.MostrarPaginaSobre).
+    -->
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FerramentasDBA.Classes\FerramentasDBA.Classes.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
+      Ícone do app, logo da marca (versão retangular com wordmark, sem
+      recorte quadrado — usada no cartão de login) e imagem de fundo da tela
+      de boas-vindas (Menu_Raiz), embutidos no assembly (mesmo padrão já
+      usado para os scripts .sql em FerramentasDBA.Classes/Scripts — ver
+      ScriptLoader) para o executável ficar autocontido, sem depender de
+      arquivos soltos ao lado do .exe. Carregados em tempo de execução por
+      Assets/RecursosVisuais.cs. A tela de LOGIN não tem mais imagem de
+      fundo (removida a pedido do usuário — ver Login_SQL.Designer.cs).
+    -->
+    <EmbeddedResource Include="Assets\AppIcon.ico" />
+    <EmbeddedResource Include="Assets\Logo.png" />
+    <EmbeddedResource Include="Assets\WelcomeBackground.png" />
+  </ItemGroup>
+
+</Project>
