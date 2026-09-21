@@ -1,28 +1,16 @@
 # SQL Rocket
 
-Ferramenta desktop (Windows) de apoio à manutenção de instâncias SQL Server — reúne em um
+Ferramenta desktop de apoio à manutenção de instâncias SQL Server — reúne em um
 só lugar tarefas de monitoramento, desempenho, índices, collation, segurança
 (logins/usuários/permissões), backup/restore, comparação de bancos e utilitários de
 manutenção (limpeza de arquivos, análise offline de deadlock/blocked process, análise de
 plano de execução, Profiler via Extended Events).
 
-**Versão 1.0 — em produção.** Todas as funcionalidades abaixo já estão implementadas de
-ponta a ponta (não é mais um esqueleto/protótipo).
+**Versão 1.0**  — Todas as funcionalidades abaixo já estão implementadas de ponta a ponta.
 
 ## Documentação
-
-- [`docs/COMO_FAZER_SETUP.md`](docs/COMO_FAZER_SETUP.md) — passo a passo para preparar o
-  ambiente do zero: pré-requisitos, obter o código, compilar, rodar os testes e executar
-  o programa pela primeira vez.
-- [`installer/README.md`](installer/README.md) — como gerar um instalador `.msi` do SQL
-  Rocket (instala em Arquivos de Programas, cria atalho no Menu Iniciar, aparece em
-  "Programas e Recursos" com opção de desinstalar/atualizar).
-- [`docs/DOCUMENTACAO_TECNICA.md`](docs/DOCUMENTACAO_TECNICA.md) — para quem for
-  desenvolver/manter o código: arquitetura, estrutura de pastas, como compilar, como a
-  conexão com o SQL Server funciona, permissões necessárias por módulo, pontos de atenção
-  de segurança e limitações conhecidas.
-- [`docs/Manual_do_Usuario_SQL_Rocket.docx`](docs/Manual_do_Usuario_SQL_Rocket.docx) — para
-  quem for usar o programa: como conectar e como usar cada tela, em linguagem simples.
+- [`docs/Manual_do_Usuario_SQL_Rocket.pdf`]— para quem for usar o programa: como conectar e
+  como usar cada tela, em linguagem simples.
 
 ## Funcionalidades
 
@@ -65,12 +53,8 @@ src/
     ├── Controls/                (menu lateral, gráficos, diagrama de plano de execução)
     └── Forms/                   (tela de login e janela principal)
 docs/
-├── DOCUMENTACAO_TECNICA.md
-└── Manual_do_Usuario_SQL_Rocket.docx
+└── Manual_do_Usuario_SQL_Rocket.pdf
 ```
-
-Detalhes de arquitetura, convenções de código e requisitos de permissão no SQL Server
-estão em [`docs/DOCUMENTACAO_TECNICA.md`](docs/DOCUMENTACAO_TECNICA.md).
 
 ## Como compilar
 
@@ -83,8 +67,6 @@ dotnet build FerramentasDBA.sln -c Release
 O projeto `FerramentasDBA.UI` é o executável (`OutputType=WinExe`); `FerramentasDBA.Classes`
 é a biblioteca de regra de negócio referenciada por ele.
 
-## Contribuindo
+## Instaladores
 
-Antes de abrir um Pull Request, veja o checklist de publicação em
-`docs/DOCUMENTACAO_TECNICA.md` (seção "Checklist recomendado antes de publicar uma nova
-versão").
+Pode ser utilizado os instalador [`installer/SQLRocket-Setup.msi`] caso não tenha o visual studio
